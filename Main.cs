@@ -37,8 +37,7 @@ namespace TuentiDownloader
                 Directory.CreateDirectory(savePath.Text);
 
                 Tuenti.SavePath = savePath.Text;
-                var downloader = new HtmlDownloader();
-                downloader.ResourcePath = Path.Combine(savePath.Text, "Recursos");
+                var downloader = new HtmlDownloader {ResourcePath = Path.Combine(savePath.Text, "Recursos")};
 
 
                 //Descargar fotos
@@ -78,12 +77,13 @@ namespace TuentiDownloader
         private void _downloadPhotos(HtmlDownloader downloader)
         {
             int photo = 0;
-            bool more_comments, more_pages;
+            bool morePages;
             do
             {
                 int page = 0;
 
                 //Recorrer comentarios
+                bool moreComments;
                 do
                 {
                     if (_cancel)
@@ -97,27 +97,19 @@ namespace TuentiDownloader
                         photo = int.Parse(match.Groups[1].Value) - 1;
                     }
 
-                    //Parsear HTML
-                    var document = new HtmlDocument();
-                    document.OptionDefaultStreamEncoding = Encoding.UTF8;
-                    document.LoadHtml(webBrowser.Document.Body.Parent.OuterHtml);
-
-                    //Corregir página
-                    Tuenti.FixPhotoPage(document, photo, page);
-
-                    //Guardar página
-                    downloader.Download(document, Tuenti.GetPhotoPath(photo, page));
+                    //Descargar página
+                    _process(doc => Tuenti.FixPhotoPage(doc, photo, page), Tuenti.GetPhotoPath(photo, page), downloader);
 
                     //Recorrer comentarios
-                    more_comments = _moveNext("photo_wall");
+                    moreComments = _moveNext("photo_wall");
 
                     page++;
-                } while (more_comments);
+                } while (moreComments);
 
                 //Recorrer páginas
-                more_pages = _moveNext("photo_pager");
+                morePages = _moveNext("photo_pager");
                 photo++;
-            } while (more_pages);
+            } while (morePages);
         }
 
         private void _downloadMessages(HtmlDownloader downloader)
@@ -130,7 +122,7 @@ namespace TuentiDownloader
             webBrowser.InjectJS(Resources.jQueryLoader);
 
             int page = 0;
-            bool more_pages;
+            bool morePages;
             do
             {
                 //Calcular número de página
@@ -151,8 +143,7 @@ namespace TuentiDownloader
                 }
 
                 //Parsear HTML
-                var document = new HtmlDocument();
-                document.OptionDefaultStreamEncoding = Encoding.UTF8;
+                var document = new HtmlDocument {OptionDefaultStreamEncoding = Encoding.UTF8};
                 document.LoadHtml(webBrowser.Document.Body.Parent.OuterHtml);
 
                 //Corregir página
@@ -190,16 +181,8 @@ namespace TuentiDownloader
                         }
                     } while (foundMoreMessages);
 
-                    //Parsear HTML
-                    document = new HtmlDocument();
-                    document.OptionDefaultStreamEncoding = Encoding.UTF8;
-                    document.LoadHtml(webBrowser.Document.Body.Parent.OuterHtml);
-
-                    //Corregir página
-                    Tuenti.FixMessagePage(document, page, message);
-
-                    //Guardar página
-                    downloader.Download(document, Tuenti.GetMessagePath(page, message));
+                    //Descargar página
+                    _process(doc => Tuenti.FixMessagePage(doc, page, message), Tuenti.GetMessagePath(page, message), downloader);
 
                     message++;
 
@@ -214,12 +197,12 @@ namespace TuentiDownloader
                 webBrowser.WaitLoad(); //Necesario para que el DOM se actualice
 
                 //Recorrer páginas
-                more_pages = _moveNext("pager_overlay");
+                morePages = _moveNext("pager_overlay");
                 page++;
 
 
                 webBrowser.WaitLoad(); //Necesario para que el DOM se actualice
-            } while (more_pages);
+            } while (morePages);
         }
 
         private void _downloadProfile(HtmlDownloader downloader)
@@ -232,21 +215,30 @@ namespace TuentiDownloader
             bool morePages;
             do
             {
-                //Parsear HTML
-                var document = new HtmlDocument();
-                document.OptionDefaultStreamEncoding = Encoding.UTF8;
-                document.LoadHtml(webBrowser.Document.Body.Parent.OuterHtml);
-
-                //Corregir página
-                Tuenti.FixProfilePage(document, page);
-
-                //Guardar página
-                downloader.Download(document, Tuenti.GetProfilePath(page));
+                //Descargar página
+                _process(document => Tuenti.FixProfilePage(document, page), Tuenti.GetProfilePath(page), downloader);
 
                 //Recorrer páginas
                 morePages = _moveNext("wall_body");
                 page++;
             } while (morePages);
+        }
+
+        private void _process(Action<HtmlDocument> fixer, string savePath, HtmlDownloader downloader)
+        {
+            //Parsear HTML
+            var document = new HtmlDocument { OptionDefaultStreamEncoding = Encoding.UTF8 };
+            document.LoadHtml(webBrowser.Document.Body.Parent.OuterHtml);
+
+            //Corregir página
+            fixer(document);
+
+            //Guardar página
+            downloader.Download(document, savePath);
+
+            //Liberar memoria
+            document = null;
+            GC.Collect();
         }
 
         private bool _moveNext(string id)

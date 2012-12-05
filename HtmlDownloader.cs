@@ -33,7 +33,7 @@ namespace TuentiDownloader
             meta2.Attributes.Add("content", "Type=text/html; charset=utf-8");
             document.DocumentNode.SelectSingleNode("//head").ChildNodes.Add(meta2);*/
 
-            File.WriteAllText(path, document.DocumentNode.WriteTo(), new UTF8Encoding(false));
+            File.WriteAllText(path, document.DocumentNode.WriteTo(), new UTF8Encoding(true));
         }
 
         private void _downloadResources(HtmlDocument document, string tagName, string hrefAttr, bool rewriteUrls = false)
@@ -96,6 +96,7 @@ namespace TuentiDownloader
                 var client = new WebClient();
                 client.DownloadFile(url, filePath);
                 isNew = true;
+                client.Dispose();
 
                 Application.DoEvents();
             }

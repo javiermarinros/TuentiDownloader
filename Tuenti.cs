@@ -111,14 +111,15 @@ namespace TuentiDownloader
             HtmlNode messageLink = document.GetElementbyId("tab_message");
             if (messageLink != null)
             {
-                messageLink.Attributes["href"].Value = GetMessagePath(0);
+                messageLink.Attributes["href"].Value = Path.GetFileName(GetMessagePath(0));
                 messageLink.Attributes.Remove("onclick");
             }
+
             //Enlace al perfil
             HtmlNode profileLink = document.GetElementbyId("tab_profile");
             if (profileLink != null)
             {
-                profileLink.Attributes["href"].Value = GetProfilePath(0);
+                profileLink.Attributes["href"].Value = Path.GetFileName(GetProfilePath(0));
                 profileLink.Attributes.Remove("onclick");
             }
 
@@ -128,7 +129,7 @@ namespace TuentiDownloader
                     new[]
                         {
                             "ltaAdItem", "overlay_ad_container", "trigger-exclusive_sponsorships", "sponsorships_list",
-                            "chat_dock"
+                            "chat_dock", "ie_deprecated_browser_banner", "plugin_detection_warning_layer"
                         })
             {
                 HtmlNode adElm = document.GetElementbyId(ad);
