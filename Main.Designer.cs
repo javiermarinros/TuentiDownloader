@@ -37,6 +37,7 @@
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
             this.toolStripProgressBar1 = new System.Windows.Forms.ToolStripProgressBar();
+            this.toolStripStatusLabel2 = new System.Windows.Forms.ToolStripStatusLabel();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.numericUpDown1 = new System.Windows.Forms.NumericUpDown();
             this.label3 = new System.Windows.Forms.Label();
@@ -45,7 +46,6 @@
             this.downloadPhotos = new System.Windows.Forms.CheckBox();
             this.button3 = new System.Windows.Forms.Button();
             this.webBrowser = new TuentiDownloader.WebBrowserEx();
-            this.toolStripStatusLabel2 = new System.Windows.Forms.ToolStripStatusLabel();
             this.statusStrip1.SuspendLayout();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
@@ -112,7 +112,7 @@
             // 
             this.toolStripStatusLabel1.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.toolStripStatusLabel1.Name = "toolStripStatusLabel1";
-            this.toolStripStatusLabel1.Size = new System.Drawing.Size(761, 17);
+            this.toolStripStatusLabel1.Size = new System.Drawing.Size(668, 17);
             this.toolStripStatusLabel1.Spring = true;
             this.toolStripStatusLabel1.Text = "Listo";
             this.toolStripStatusLabel1.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -121,6 +121,14 @@
             // 
             this.toolStripProgressBar1.Name = "toolStripProgressBar1";
             this.toolStripProgressBar1.Size = new System.Drawing.Size(250, 16);
+            // 
+            // toolStripStatusLabel2
+            // 
+            this.toolStripStatusLabel2.IsLink = true;
+            this.toolStripStatusLabel2.Name = "toolStripStatusLabel2";
+            this.toolStripStatusLabel2.Size = new System.Drawing.Size(93, 17);
+            this.toolStripStatusLabel2.Text = "@javiermarinros";
+            this.toolStripStatusLabel2.Click += new System.EventHandler(this.toolStripStatusLabel2_Click);
             // 
             // groupBox1
             // 
@@ -231,18 +239,11 @@
             this.webBrowser.ScriptErrorsSuppressed = true;
             this.webBrowser.Size = new System.Drawing.Size(1000, 493);
             this.webBrowser.TabIndex = 0;
+            this.webBrowser.Timeout = 3000;
             this.webBrowser.Url = new System.Uri("http://www.tuenti.com/#m=Home&func=index", System.UriKind.Absolute);
             this.webBrowser.Navigated += new System.Windows.Forms.WebBrowserNavigatedEventHandler(this.webBrowser_Navigated);
             this.webBrowser.Navigating += new System.Windows.Forms.WebBrowserNavigatingEventHandler(this.webBrowser_Navigating);
             this.webBrowser.ProgressChanged += new System.Windows.Forms.WebBrowserProgressChangedEventHandler(this.webBrowser_ProgressChanged);
-            // 
-            // toolStripStatusLabel2
-            // 
-            this.toolStripStatusLabel2.IsLink = true;
-            this.toolStripStatusLabel2.Name = "toolStripStatusLabel2";
-            this.toolStripStatusLabel2.Size = new System.Drawing.Size(93, 17);
-            this.toolStripStatusLabel2.Text = "@javiermarinros";
-            this.toolStripStatusLabel2.Click += new System.EventHandler(this.toolStripStatusLabel2_Click);
             // 
             // Main
             // 
@@ -256,7 +257,7 @@
             this.Controls.Add(this.button1);
             this.Controls.Add(this.webBrowser);
             this.Name = "Main";
-            this.Text = "Tuenti Downloader por @javiermarinros";
+            this.Text = "Tuenti Downloader";
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.Main_FormClosed);
             this.statusStrip1.ResumeLayout(false);
             this.statusStrip1.PerformLayout();

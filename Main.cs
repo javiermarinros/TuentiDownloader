@@ -1,20 +1,20 @@
-﻿using HtmlAgilityPack;
-using mshtml;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
+using TuentiDownloader.Properties;
+using HtmlDocument = HtmlAgilityPack.HtmlDocument;
 
 namespace TuentiDownloader
 {
     public partial class Main : Form
     {
-        private bool _cancel = false;
+        private bool _cancel;
+
         public Main()
         {
             InitializeComponent();
@@ -61,7 +61,9 @@ namespace TuentiDownloader
 
                 if (!_cancel)
                 {
-                    MessageBox.Show("FIN!");
+                    System.Media.SystemSounds.Exclamation.Play();
+                    MessageBox.Show("TuentiDownloader ha terminado de descargar contenidos", "Fin de la descarga",
+                                    MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
             }
             else
@@ -88,15 +90,15 @@ namespace TuentiDownloader
                         return;
 
                     //Calcular número de página
-                    Regex regex = new Regex("(\\d+) de \\d+", RegexOptions.IgnoreCase);
-                    var match = regex.Match(webBrowser.Document.Body.InnerText);
+                    var regex = new Regex("(\\d+) de \\d+", RegexOptions.IgnoreCase);
+                    Match match = regex.Match(webBrowser.Document.Body.InnerText);
                     if (match.Success)
                     {
                         photo = int.Parse(match.Groups[1].Value) - 1;
                     }
 
                     //Parsear HTML
-                    var document = new HtmlAgilityPack.HtmlDocument();
+                    var document = new HtmlDocument();
                     document.OptionDefaultStreamEncoding = Encoding.UTF8;
                     document.LoadHtml(webBrowser.Document.Body.Parent.OuterHtml);
 
@@ -125,32 +127,31 @@ namespace TuentiDownloader
             webBrowser.WaitLoad(true);
 
             //Inyectar jQuery
-            webBrowser.InjectJS(Properties.Resources.jQueryLoader);
+            webBrowser.InjectJS(Resources.jQueryLoader);
 
             int page = 0;
             bool more_pages;
             do
             {
-
                 //Calcular número de página
-                Regex regex = new Regex("(\\d+) de \\d+", RegexOptions.IgnoreCase);
-                var match = regex.Match(webBrowser.Document.Body.InnerText);
+                var regex = new Regex("(\\d+) de \\d+", RegexOptions.IgnoreCase);
+                Match match = regex.Match(webBrowser.Document.Body.InnerText);
                 if (match.Success)
                 {
                     page = int.Parse(match.Groups[1].Value) - 1;
                 }
 
                 //Obtener ids de los mensajes
-                List<string> messageIds = new List<string>();
+                var messageIds = new List<string>();
                 foreach (HtmlElement node in webBrowser.Document.All)
                 {
                     string id = node.GetAttribute("threadid");
-                    if (!string.IsNullOrEmpty(id) && !messageIds.Contains(id) && Regex.IsMatch(id,"^\\d+$"))
+                    if (!string.IsNullOrEmpty(id) && !messageIds.Contains(id) && Regex.IsMatch(id, "^\\d+$"))
                         messageIds.Add(id);
                 }
 
                 //Parsear HTML
-                var document = new HtmlAgilityPack.HtmlDocument();
+                var document = new HtmlDocument();
                 document.OptionDefaultStreamEncoding = Encoding.UTF8;
                 document.LoadHtml(webBrowser.Document.Body.Parent.OuterHtml);
 
@@ -160,15 +161,16 @@ namespace TuentiDownloader
                 //Guardar página
                 downloader.Download(document, Tuenti.GetMessagePath(page));
 
-               //Recorrer mensajes
-               int message = 1;
-               foreach (string tid in messageIds)
+                //Recorrer mensajes
+                int message = 1;
+                foreach (string tid in messageIds)
                 {
                     if (_cancel)
                         return;
 
                     //Abrir mensaje
-                    webBrowser.Document.InvokeScript("eval", new object[] { "jQuery('div[threadid="+tid+"]').click()" });
+                    webBrowser.Document.InvokeScript("eval",
+                                                     new object[] {"jQuery('div[threadid=" + tid + "]').click()"});
                     webBrowser.WaitLoad();
 
                     //Cargar mensajes antiguos
@@ -183,14 +185,14 @@ namespace TuentiDownloader
                                 foundMoreMessages = true;
                                 link.InvokeMember("click");
 
-                                    webBrowser.WaitLoad();
+                                webBrowser.WaitLoad();
                             }
                         }
                     } while (foundMoreMessages);
 
                     //Parsear HTML
-                     document = new HtmlAgilityPack.HtmlDocument();
-                   document.OptionDefaultStreamEncoding = Encoding.UTF8;
+                    document = new HtmlDocument();
+                    document.OptionDefaultStreamEncoding = Encoding.UTF8;
                     document.LoadHtml(webBrowser.Document.Body.Parent.OuterHtml);
 
                     //Corregir página
@@ -201,20 +203,22 @@ namespace TuentiDownloader
 
                     message++;
 
-                   //Cerrar mensaje
-                    webBrowser.Document.InvokeScript("eval", new object[] { "jQuery('.author[threadid=" + tid + "]:visible').click()" });
+                    //Cerrar mensaje
+                    webBrowser.Document.InvokeScript("eval",
+                                                     new object[]
+                                                         {"jQuery('.author[threadid=" + tid + "]:visible').click()"});
                     Application.DoEvents();
                     webBrowser.WaitLoad();
                 }
 
-               webBrowser.WaitLoad();//Necesario para que el DOM se actualice
+                webBrowser.WaitLoad(); //Necesario para que el DOM se actualice
 
                 //Recorrer páginas
                 more_pages = _moveNext("pager_overlay");
                 page++;
 
 
-                webBrowser.WaitLoad();//Necesario para que el DOM se actualice
+                webBrowser.WaitLoad(); //Necesario para que el DOM se actualice
             } while (more_pages);
         }
 
@@ -229,7 +233,7 @@ namespace TuentiDownloader
             do
             {
                 //Parsear HTML
-                var document = new HtmlAgilityPack.HtmlDocument();
+                var document = new HtmlDocument();
                 document.OptionDefaultStreamEncoding = Encoding.UTF8;
                 document.LoadHtml(webBrowser.Document.Body.Parent.OuterHtml);
 
@@ -249,7 +253,7 @@ namespace TuentiDownloader
         {
             Application.DoEvents();
 
-            var elm = webBrowser.Document.GetElementById(id);
+            HtmlElement elm = webBrowser.Document.GetElementById(id);
             if (elm != null)
             {
                 foreach (HtmlElement link in elm.GetElementsByTagName("a"))
@@ -282,13 +286,13 @@ namespace TuentiDownloader
 
         private void webBrowser_Navigating(object sender, WebBrowserNavigatingEventArgs e)
         {
-            toolStripStatusLabel1.Text ="Cargando "+ e.Url.ToString();
+            toolStripStatusLabel1.Text = "Cargando " + e.Url;
         }
 
         private void webBrowser_ProgressChanged(object sender, WebBrowserProgressChangedEventArgs e)
         {
-            toolStripProgressBar1.Maximum = (int)e.MaximumProgress;
-            toolStripProgressBar1.Value = (int)e.CurrentProgress;
+            toolStripProgressBar1.Maximum = (int) e.MaximumProgress;
+            toolStripProgressBar1.Value = (int) e.CurrentProgress;
         }
 
         private void webBrowser_Navigated(object sender, WebBrowserNavigatedEventArgs e)
@@ -305,7 +309,6 @@ namespace TuentiDownloader
             }
             else
             {
-
                 groupBox1.Visible = true;
                 button3.Text = "Ocultar opciones";
             }
@@ -313,12 +316,12 @@ namespace TuentiDownloader
 
         private void numericUpDown1_ValueChanged(object sender, EventArgs e)
         {
-            webBrowser.Timeout = (int)numericUpDown1.Value;
+            webBrowser.Timeout = (int) numericUpDown1.Value;
         }
 
         private void toolStripStatusLabel2_Click(object sender, EventArgs e)
         {
-            System.Diagnostics.Process.Start("https://twitter.com/javiermarinros");
+            Process.Start("https://twitter.com/javiermarinros");
         }
     }
 }

@@ -1,16 +1,16 @@
-﻿using HtmlAgilityPack;
-using System;
-using System.Collections.Generic;
-using System.Drawing;
+﻿using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Windows.Forms;
+using HtmlAgilityPack;
+using HtmlDocument = HtmlAgilityPack.HtmlDocument;
 
 namespace TuentiDownloader
 {
-    class HtmlDownloader
+    internal class HtmlDownloader
     {
         public string ResourcePath { get; set; }
 
@@ -23,16 +23,15 @@ namespace TuentiDownloader
             _downloadResources(document, "link", "href", true);
             _downloadResources(document, "script", "src");
 
-            //     File.WriteAllText(path, document.DocumentNode.WriteTo(), new UTF8Encoding(false));
-
-            var meta = document.CreateElement("meta");
+            //Añadir cabeceras meta para indificar codificación UTF8
+            HtmlNode meta = document.CreateElement("meta");
             meta.Attributes.Add("charset", "utf-8");
             document.DocumentNode.SelectSingleNode("//head").ChildNodes.Add(meta);
 
-            var meta2 = document.CreateElement("meta");
+            /*HtmlNode meta2 = document.CreateElement("meta");
             meta2.Attributes.Add("http-equiv", "Content-Type");
             meta2.Attributes.Add("content", "Type=text/html; charset=utf-8");
-            document.DocumentNode.SelectSingleNode("//head").ChildNodes.Add(meta2);
+            document.DocumentNode.SelectSingleNode("//head").ChildNodes.Add(meta2);*/
 
             File.WriteAllText(path, document.DocumentNode.WriteTo(), new UTF8Encoding(false));
         }
@@ -40,7 +39,7 @@ namespace TuentiDownloader
         private void _downloadResources(HtmlDocument document, string tagName, string hrefAttr, bool rewriteUrls = false)
         {
             // foreach (HtmlElement link in document.GetElementsByTagName(tagName))
-            foreach (HtmlNode link in document.DocumentNode.SelectNodes("//"+tagName))
+            foreach (HtmlNode link in document.DocumentNode.SelectNodes("//" + tagName))
             {
                 try
                 {
@@ -51,11 +50,11 @@ namespace TuentiDownloader
                         continue;
 
                     bool isNew;
-                    string fileName = _downloadFile( url, out isNew);
+                    string fileName = _downloadFile(url, out isNew);
 
                     if (isNew && rewriteUrls)
                     {
-                        Regex regex = new Regex("url\\(\"?(.+?)\"?\\)", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+                        var regex = new Regex("url\\(\"?(.+?)\"?\\)", RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
                         string filePath = Path.Combine(ResourcePath, fileName);
                         string content = File.ReadAllText(filePath);
@@ -64,23 +63,25 @@ namespace TuentiDownloader
                             try
                             {
                                 string resourceUrl = match.Groups[1].Value;
-                                string filename = _downloadFile( resourceUrl, out isNew);
+                                string filename = _downloadFile(resourceUrl, out isNew);
                                 content = content.Replace(resourceUrl, filename);
                             }
-                            catch { }
-
+                            catch
+                            {
+                            }
                         }
                         File.WriteAllText(filePath, content);
                     }
 
-                    //link.SetAttribute(hrefAttr, "Recursos/" + fileName);
                     link.Attributes[hrefAttr].Value = "Recursos/" + fileName;
                 }
-                catch { }
+                catch
+                {
+                }
             }
         }
 
-        private string _downloadFile( string url, out bool isNew)
+        private string _downloadFile(string url, out bool isNew)
         {
             if (url.StartsWith("//"))
                 url = "http:" + url;
@@ -90,13 +91,13 @@ namespace TuentiDownloader
 
             if (!File.Exists(filePath))
             {
-                System.Windows.Forms.Application.DoEvents();
+                Application.DoEvents();
 
                 var client = new WebClient();
                 client.DownloadFile(url, filePath);
                 isNew = true;
 
-                System.Windows.Forms.Application.DoEvents();
+                Application.DoEvents();
             }
             else
             {
@@ -117,9 +118,7 @@ namespace TuentiDownloader
                         continue;
 
                     bool isNew;
-                    string fileName = _downloadFile( url, out isNew);
-
-                    var client = new WebClient();
+                    string fileName = _downloadFile(url, out isNew);
 
                     if (isNew)
                     {
@@ -129,8 +128,8 @@ namespace TuentiDownloader
                         {
                             try
                             {
-                                var extension = ".jpg";
-                                using (var image = Image.FromFile(filePath))
+                                string extension = ".jpg";
+                                using (Image image = Image.FromFile(filePath))
                                 {
                                     if (ImageFormat.Jpeg.Equals(image.RawFormat))
                                     {
@@ -165,17 +164,18 @@ namespace TuentiDownloader
                         }
                     }
 
-                    imageElement.Attributes["src"].Value="Recursos/" + fileName;
-                    //imageElement.SetAttribute("src", "Recursos/" + fileName);
+                    imageElement.Attributes["src"].Value = "Recursos/" + fileName;
                 }
-                catch { }
+                catch
+                {
+                }
             }
         }
 
         private string _makeValidFileName(string name)
         {
             string regexSearch = new string(Path.GetInvalidFileNameChars()) + new string(Path.GetInvalidPathChars());
-            Regex r = new Regex(string.Format("[{0}]", Regex.Escape(regexSearch)));
+            var r = new Regex(string.Format("[{0}]", Regex.Escape(regexSearch)));
             return r.Replace(name, "");
         }
     }
