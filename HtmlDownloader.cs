@@ -89,14 +89,15 @@ namespace TuentiDownloader
             string fileName = _makeValidFileName(url);
             string filePath = Path.Combine(ResourcePath, fileName);
 
-            if (!File.Exists(filePath))
+            if (!File.Exists(filePath) || new FileInfo(filePath).Length==0)
             {
                 Application.DoEvents();
 
-                var client = new WebClient();
-                client.DownloadFile(url, filePath);
-                isNew = true;
-                client.Dispose();
+                using (var client = new WebClient())
+                {
+                    client.DownloadFile(url, filePath);
+                    isNew = true;
+                }
 
                 Application.DoEvents();
             }
@@ -121,47 +122,45 @@ namespace TuentiDownloader
                     bool isNew;
                     string fileName = _downloadFile(url, out isNew);
 
-                    if (isNew)
-                    {
+               //     if (isNew)
                         string filePath = Path.Combine(ResourcePath, fileName);
                         //Intentar ajustar la extensión
-                        if (Path.GetExtension(fileName) == "" || Path.GetExtension(fileName).Length > 5)
+                    if (Path.GetExtension(fileName) == "" || Path.GetExtension(fileName).Length > 5)
+                    {
+                        try
                         {
-                            try
+                            string extension = ".jpg";
+                            using (Image image = Image.FromFile(filePath))
                             {
-                                string extension = ".jpg";
-                                using (Image image = Image.FromFile(filePath))
+                                if (ImageFormat.Jpeg.Equals(image.RawFormat))
                                 {
-                                    if (ImageFormat.Jpeg.Equals(image.RawFormat))
-                                    {
-                                        extension = ".jpg";
-                                    }
-                                    else if (ImageFormat.Png.Equals(image.RawFormat))
-                                    {
-                                        extension = ".png";
-                                    }
-                                    else if (ImageFormat.Gif.Equals(image.RawFormat))
-                                    {
-                                        extension = ".gif";
-                                    }
+                                    extension = ".jpg";
                                 }
-
-                                fileName += extension;
-                                string newFilePath = Path.Combine(ResourcePath, fileName);
-
-                                if (File.Exists(newFilePath))
+                                else if (ImageFormat.Png.Equals(image.RawFormat))
                                 {
-                                    File.Delete(filePath);
+                                    extension = ".png";
                                 }
-                                else
+                                else if (ImageFormat.Gif.Equals(image.RawFormat))
                                 {
-                                    File.Move(filePath, newFilePath);
+                                    extension = ".gif";
                                 }
-                                filePath = newFilePath;
                             }
-                            catch
+
+                            fileName += extension;
+                            string newFilePath = Path.Combine(ResourcePath, fileName);
+
+                            if (File.Exists(newFilePath))
                             {
+                                File.Delete(filePath);
                             }
+                            else
+                            {
+                                File.Move(filePath, newFilePath);
+                            }
+                            filePath = newFilePath;
+                        }
+                        catch
+                        {
                         }
                     }
 

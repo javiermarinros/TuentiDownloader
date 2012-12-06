@@ -125,17 +125,21 @@ namespace TuentiDownloader
 
             //Eliminar publicidad y otros elementos innecesarios (chat)
             foreach (
-                string ad in
+                string selector in
                     new[]
                         {
-                            "ltaAdItem", "overlay_ad_container", "trigger-exclusive_sponsorships", "sponsorships_list",
-                            "chat_dock", "ie_deprecated_browser_banner", "plugin_detection_warning_layer"
+                            "#ltaAdItem", "#overlay_ad_container", "#trigger-exclusive_sponsorships", "#sponsorships_list",
+                            "#chat_dock", "#ie_deprecated_browser_banner", "#plugin_detection_warning_layer","#errorDialog",".mod.wall .feedBack.information",
+                            ".injectedjs"
                         })
             {
-                HtmlNode adElm = document.GetElementbyId(ad);
-                if (adElm != null)
+                HtmlNodeCollection found = document.DocumentNode.SelectNodes(css2xpath.Transform(selector));
+                if (found != null)
                 {
-                    adElm.Remove();
+                    foreach (HtmlNode element in found)
+                    {
+                     element.Remove();
+                    }
                 }
             }
 

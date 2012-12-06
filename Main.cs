@@ -30,9 +30,10 @@ namespace TuentiDownloader
             if (savePath.Enabled)
             {
                 _cancel = false;
-                savePath.Enabled = false;
-                button2.Enabled = false;
-                button1.Text = "Parar";
+                if (groupBox1.Visible)
+                    bToggleSettings.PerformClick();
+                bToggleSettings.Enabled = false;
+                bStart.Text = "Parar";
 
                 Directory.CreateDirectory(savePath.Text);
 
@@ -65,13 +66,11 @@ namespace TuentiDownloader
                                     MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
             }
-            else
-            {
+            else{
                 _cancel = true;
-                button1.Text = "Comenzar";
             }
-            savePath.Enabled = true;
-            button2.Enabled = true;
+            bStart.Text = "Comenzar";
+            bToggleSettings.Enabled = true;
         }
 
         private void _downloadPhotos(HtmlDownloader downloader)
@@ -166,6 +165,7 @@ namespace TuentiDownloader
 
                     //Cargar mensajes antiguos
                     bool foundMoreMessages;
+                    int i = 0;
                     do
                     {
                         foundMoreMessages = false;
@@ -179,7 +179,8 @@ namespace TuentiDownloader
                                 webBrowser.WaitLoad();
                             }
                         }
-                    } while (foundMoreMessages);
+                        i++;
+                    } while (foundMoreMessages && i<30);
 
                     //Descargar página
                     _process(doc => Tuenti.FixMessagePage(doc, page, message), Tuenti.GetMessagePath(page, message), downloader);
@@ -226,19 +227,26 @@ namespace TuentiDownloader
 
         private void _process(Action<HtmlDocument> fixer, string savePath, HtmlDownloader downloader)
         {
-            //Parsear HTML
-            var document = new HtmlDocument { OptionDefaultStreamEncoding = Encoding.UTF8 };
-            document.LoadHtml(webBrowser.Document.Body.Parent.OuterHtml);
+            try
+            {
+                //Parsear HTML
+                var document = new HtmlDocument { OptionDefaultStreamEncoding = Encoding.UTF8 };
+                document.LoadHtml(webBrowser.Document.Body.Parent.OuterHtml);
 
-            //Corregir página
-            fixer(document);
+                //Corregir página
+                fixer(document);
 
-            //Guardar página
-            downloader.Download(document, savePath);
+                //Guardar página
+                downloader.Download(document, savePath);
 
-            //Liberar memoria
-            document = null;
-            GC.Collect();
+                //Liberar memoria
+                document = null;
+                GC.Collect();
+            }
+            catch
+            {
+                File.WriteAllText(savePath,"Se produjo un error al recuperar la URL "+webBrowser.Url);
+            }
         }
 
         private bool _moveNext(string id)
@@ -297,12 +305,12 @@ namespace TuentiDownloader
             if (groupBox1.Visible)
             {
                 groupBox1.Visible = false;
-                button3.Text = "Mostrar opciones";
+                bToggleSettings.Text = "Mostrar opciones";
             }
             else
             {
                 groupBox1.Visible = true;
-                button3.Text = "Ocultar opciones";
+                bToggleSettings.Text = "Ocultar opciones";
             }
         }
 

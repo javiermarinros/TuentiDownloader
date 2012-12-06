@@ -32,6 +32,8 @@ namespace TuentiDownloader
             if (head != null)
             {
                 HtmlElement scriptEl = Document.CreateElement("script");
+                scriptEl.SetAttribute("class", "injectedjs");
+                scriptEl.SetAttribute("className", "injectedjs");
                 IHTMLScriptElement element = (IHTMLScriptElement)scriptEl.DomElement;
                 element.text = global::TuentiDownloader.Properties.Resources.jQueryLoader;
                 ((HtmlElement)head[0]).AppendChild(scriptEl);

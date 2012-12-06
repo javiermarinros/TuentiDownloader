@@ -28,11 +28,11 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.button1 = new System.Windows.Forms.Button();
+            this.bStart = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.savePath = new System.Windows.Forms.TextBox();
-            this.button2 = new System.Windows.Forms.Button();
+            this.bExplore = new System.Windows.Forms.Button();
             this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
@@ -44,22 +44,22 @@
             this.downloadProfile = new System.Windows.Forms.CheckBox();
             this.downloadMessages = new System.Windows.Forms.CheckBox();
             this.downloadPhotos = new System.Windows.Forms.CheckBox();
-            this.button3 = new System.Windows.Forms.Button();
+            this.bToggleSettings = new System.Windows.Forms.Button();
             this.webBrowser = new TuentiDownloader.WebBrowserEx();
             this.statusStrip1.SuspendLayout();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
             this.SuspendLayout();
             // 
-            // button1
+            // bStart
             // 
-            this.button1.Location = new System.Drawing.Point(329, 8);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(83, 23);
-            this.button1.TabIndex = 1;
-            this.button1.Text = "Comenzar";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
+            this.bStart.Location = new System.Drawing.Point(329, 8);
+            this.bStart.Name = "bStart";
+            this.bStart.Size = new System.Drawing.Size(83, 23);
+            this.bStart.TabIndex = 1;
+            this.bStart.Text = "Comenzar";
+            this.bStart.UseVisualStyleBackColor = true;
+            this.bStart.Click += new System.EventHandler(this.button1_Click);
             // 
             // label1
             // 
@@ -86,15 +86,15 @@
             this.savePath.Size = new System.Drawing.Size(184, 20);
             this.savePath.TabIndex = 4;
             // 
-            // button2
+            // bExplore
             // 
-            this.button2.Location = new System.Drawing.Point(278, 19);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(31, 23);
-            this.button2.TabIndex = 5;
-            this.button2.Text = "...";
-            this.button2.UseVisualStyleBackColor = true;
-            this.button2.Click += new System.EventHandler(this.button2_Click);
+            this.bExplore.Location = new System.Drawing.Point(278, 19);
+            this.bExplore.Name = "bExplore";
+            this.bExplore.Size = new System.Drawing.Size(31, 23);
+            this.bExplore.TabIndex = 5;
+            this.bExplore.Text = "...";
+            this.bExplore.UseVisualStyleBackColor = true;
+            this.bExplore.Click += new System.EventHandler(this.button2_Click);
             // 
             // statusStrip1
             // 
@@ -138,7 +138,7 @@
             this.groupBox1.Controls.Add(this.downloadProfile);
             this.groupBox1.Controls.Add(this.downloadMessages);
             this.groupBox1.Controls.Add(this.downloadPhotos);
-            this.groupBox1.Controls.Add(this.button2);
+            this.groupBox1.Controls.Add(this.bExplore);
             this.groupBox1.Controls.Add(this.label2);
             this.groupBox1.Controls.Add(this.savePath);
             this.groupBox1.Location = new System.Drawing.Point(693, 37);
@@ -217,16 +217,16 @@
             this.downloadPhotos.Text = "Descargar fotos";
             this.downloadPhotos.UseVisualStyleBackColor = true;
             // 
-            // button3
+            // bToggleSettings
             // 
-            this.button3.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.button3.Location = new System.Drawing.Point(889, 13);
-            this.button3.Name = "button3";
-            this.button3.Size = new System.Drawing.Size(126, 23);
-            this.button3.TabIndex = 8;
-            this.button3.Text = "Mostrar opciones";
-            this.button3.UseVisualStyleBackColor = true;
-            this.button3.Click += new System.EventHandler(this.button3_Click);
+            this.bToggleSettings.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.bToggleSettings.Location = new System.Drawing.Point(889, 13);
+            this.bToggleSettings.Name = "bToggleSettings";
+            this.bToggleSettings.Size = new System.Drawing.Size(126, 23);
+            this.bToggleSettings.TabIndex = 8;
+            this.bToggleSettings.Text = "Mostrar opciones";
+            this.bToggleSettings.UseVisualStyleBackColor = true;
+            this.bToggleSettings.Click += new System.EventHandler(this.button3_Click);
             // 
             // webBrowser
             // 
@@ -250,11 +250,11 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1028, 554);
-            this.Controls.Add(this.button3);
+            this.Controls.Add(this.bToggleSettings);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.statusStrip1);
             this.Controls.Add(this.label1);
-            this.Controls.Add(this.button1);
+            this.Controls.Add(this.bStart);
             this.Controls.Add(this.webBrowser);
             this.Name = "Main";
             this.Text = "Tuenti Downloader";
@@ -272,11 +272,11 @@
         #endregion
 
         private WebBrowserEx webBrowser;
-        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Button bStart;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.TextBox savePath;
-        private System.Windows.Forms.Button button2;
+        private System.Windows.Forms.Button bExplore;
         private System.Windows.Forms.FolderBrowserDialog folderBrowserDialog1;
         private System.Windows.Forms.StatusStrip statusStrip1;
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel1;
@@ -285,7 +285,7 @@
         private System.Windows.Forms.CheckBox downloadProfile;
         private System.Windows.Forms.CheckBox downloadMessages;
         private System.Windows.Forms.CheckBox downloadPhotos;
-        private System.Windows.Forms.Button button3;
+        private System.Windows.Forms.Button bToggleSettings;
         private System.Windows.Forms.NumericUpDown numericUpDown1;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel2;
