@@ -130,7 +130,14 @@ namespace TuentiDownloader
                         {
                             "#ltaAdItem", "#overlay_ad_container", "#trigger-exclusive_sponsorships", "#sponsorships_list",
                             "#chat_dock", "#ie_deprecated_browser_banner", "#plugin_detection_warning_layer","#errorDialog",".mod.wall .feedBack.information",
-                            ".injectedjs"
+                            ".injectedjs",
+                            "xmp",//(elementos del chat),
+                            "#lang_form_1","#lang_sel_1",//Selector de idioma
+                            "script",//Scripts
+                            "#video_detector",//Detector de vídeo
+                            "iframe",//iframes
+                            ".hide",//Elementos ocultos
+                            ".actionGroup .search, .actionGroup .uploadButton, .settings .settingsLink"//Botón de búsqueda y subida y opciones
                         })
             {
                 HtmlNodeCollection found = document.DocumentNode.SelectNodes(css2xpath.Transform(selector));
@@ -138,10 +145,12 @@ namespace TuentiDownloader
                 {
                     foreach (HtmlNode element in found)
                     {
-                     element.Remove();
+                        element.RemoveAll();
+                        element.Remove();
                     }
                 }
             }
+
 
             //Ajustar estilos
             HtmlNodeCollection pagers = document.DocumentNode.SelectNodes("//*[contains(@class,'pager')]");

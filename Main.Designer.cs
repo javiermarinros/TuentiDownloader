@@ -220,7 +220,7 @@
             // bToggleSettings
             // 
             this.bToggleSettings.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.bToggleSettings.Location = new System.Drawing.Point(889, 13);
+            this.bToggleSettings.Location = new System.Drawing.Point(889, 8);
             this.bToggleSettings.Name = "bToggleSettings";
             this.bToggleSettings.Size = new System.Drawing.Size(126, 23);
             this.bToggleSettings.TabIndex = 8;

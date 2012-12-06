@@ -39,44 +39,48 @@ namespace TuentiDownloader
         private void _downloadResources(HtmlDocument document, string tagName, string hrefAttr, bool rewriteUrls = false)
         {
             // foreach (HtmlElement link in document.GetElementsByTagName(tagName))
-            foreach (HtmlNode link in document.DocumentNode.SelectNodes("//" + tagName))
+            var links = document.DocumentNode.SelectNodes("//" + tagName);
+            if (links != null)
             {
-                try
+                foreach (HtmlNode link in links)
                 {
-                    // string url = link.GetAttribute(hrefAttr);
-                    string url = link.Attributes[hrefAttr].Value;
-
-                    if (string.IsNullOrEmpty(url))
-                        continue;
-
-                    bool isNew;
-                    string fileName = _downloadFile(url, out isNew);
-
-                    if (isNew && rewriteUrls)
+                    try
                     {
-                        var regex = new Regex("url\\(\"?(.+?)\"?\\)", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+                        // string url = link.GetAttribute(hrefAttr);
+                        string url = link.Attributes[hrefAttr].Value;
 
-                        string filePath = Path.Combine(ResourcePath, fileName);
-                        string content = File.ReadAllText(filePath);
-                        foreach (Match match in regex.Matches(content))
+                        if (string.IsNullOrEmpty(url))
+                            continue;
+
+                        bool isNew;
+                        string fileName = _downloadFile(url, out isNew);
+
+                        if (isNew && rewriteUrls)
                         {
-                            try
-                            {
-                                string resourceUrl = match.Groups[1].Value;
-                                string filename = _downloadFile(resourceUrl, out isNew);
-                                content = content.Replace(resourceUrl, filename);
-                            }
-                            catch
-                            {
-                            }
-                        }
-                        File.WriteAllText(filePath, content);
-                    }
+                            var regex = new Regex("url\\(\"?(.+?)\"?\\)", RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
-                    link.Attributes[hrefAttr].Value = "Recursos/" + fileName;
-                }
-                catch
-                {
+                            string filePath = Path.Combine(ResourcePath, fileName);
+                            string content = File.ReadAllText(filePath);
+                            foreach (Match match in regex.Matches(content))
+                            {
+                                try
+                                {
+                                    string resourceUrl = match.Groups[1].Value;
+                                    string filename = _downloadFile(resourceUrl, out isNew);
+                                    content = content.Replace(resourceUrl, filename);
+                                }
+                                catch
+                                {
+                                }
+                            }
+                            File.WriteAllText(filePath, content);
+                        }
+
+                        link.Attributes[hrefAttr].Value = "Recursos/" + fileName;
+                    }
+                    catch
+                    {
+                    }
                 }
             }
         }
@@ -111,63 +115,67 @@ namespace TuentiDownloader
 
         private void _downloadImages(HtmlDocument document)
         {
-            foreach (HtmlNode imageElement in document.DocumentNode.SelectNodes("//img"))
+            var images = document.DocumentNode.SelectNodes("//img");
+            if (images != null)
             {
-                try
+                foreach (HtmlNode imageElement in images)
                 {
-                    string url = imageElement.Attributes["src"].Value;
-                    if (url.StartsWith("file://"))
-                        continue;
+                    try
+                    {
+                        string url = imageElement.Attributes["src"].Value;
+                        if (url.StartsWith("file://"))
+                            continue;
 
-                    bool isNew;
-                    string fileName = _downloadFile(url, out isNew);
+                        bool isNew;
+                        string fileName = _downloadFile(url, out isNew);
 
-               //     if (isNew)
+                        //     if (isNew)
                         string filePath = Path.Combine(ResourcePath, fileName);
                         //Intentar ajustar la extensión
-                    if (Path.GetExtension(fileName) == "" || Path.GetExtension(fileName).Length > 5)
-                    {
-                        try
+                        if (Path.GetExtension(fileName) == "" || Path.GetExtension(fileName).Length > 5)
                         {
-                            string extension = ".jpg";
-                            using (Image image = Image.FromFile(filePath))
+                            try
                             {
-                                if (ImageFormat.Jpeg.Equals(image.RawFormat))
+                                string extension = ".jpg";
+                                using (Image image = Image.FromFile(filePath))
                                 {
-                                    extension = ".jpg";
+                                    if (ImageFormat.Jpeg.Equals(image.RawFormat))
+                                    {
+                                        extension = ".jpg";
+                                    }
+                                    else if (ImageFormat.Png.Equals(image.RawFormat))
+                                    {
+                                        extension = ".png";
+                                    }
+                                    else if (ImageFormat.Gif.Equals(image.RawFormat))
+                                    {
+                                        extension = ".gif";
+                                    }
                                 }
-                                else if (ImageFormat.Png.Equals(image.RawFormat))
-                                {
-                                    extension = ".png";
-                                }
-                                else if (ImageFormat.Gif.Equals(image.RawFormat))
-                                {
-                                    extension = ".gif";
-                                }
-                            }
 
-                            fileName += extension;
-                            string newFilePath = Path.Combine(ResourcePath, fileName);
+                                fileName += extension;
+                                string newFilePath = Path.Combine(ResourcePath, fileName);
 
-                            if (File.Exists(newFilePath))
-                            {
-                                File.Delete(filePath);
+                                if (File.Exists(newFilePath))
+                                {
+                                    File.Delete(filePath);
+                                }
+                                else
+                                {
+                                    File.Move(filePath, newFilePath);
+                                }
+                                filePath = newFilePath;
                             }
-                            else
+                            catch
                             {
-                                File.Move(filePath, newFilePath);
                             }
-                            filePath = newFilePath;
                         }
-                        catch
-                        {
-                        }
+
+                        imageElement.Attributes["src"].Value = "Recursos/" + fileName;
                     }
-
-                    imageElement.Attributes["src"].Value = "Recursos/" + fileName;
-                }
-                catch
-                {
+                    catch
+                    {
+                    }
                 }
             }
         }

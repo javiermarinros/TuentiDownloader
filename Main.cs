@@ -27,7 +27,7 @@ namespace TuentiDownloader
 
         private void button1_Click(object sender, EventArgs e)
         {
-            if (savePath.Enabled)
+            if (bToggleSettings.Enabled)
             {
                 _cancel = false;
                 if (groupBox1.Visible)
