@@ -76,6 +76,7 @@ namespace TuentiDownloader
         private void _downloadPhotos(HtmlDownloader downloader)
         {
             int photo = 0;
+            int processed = 0;
             bool morePages;
             do
             {
@@ -108,6 +109,17 @@ namespace TuentiDownloader
                 //Recorrer páginas
                 morePages = _moveNext("photo_pager");
                 photo++;
+
+                processed++;
+                if (processed % 750 == 0)
+                {
+                    //Recargar la página para evitar cuelgues y fugas de memoria
+                    webBrowser.Refresh();
+                    webBrowser.WaitLoad(true);
+                    webBrowser.WaitLoad(true);
+                    webBrowser.WaitLoad(true);
+                    webBrowser.WaitLoad(true);
+                }
             } while (morePages);
         }
 
