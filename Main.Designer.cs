@@ -112,7 +112,7 @@
             // 
             this.toolStripStatusLabel1.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.toolStripStatusLabel1.Name = "toolStripStatusLabel1";
-            this.toolStripStatusLabel1.Size = new System.Drawing.Size(668, 17);
+            this.toolStripStatusLabel1.Size = new System.Drawing.Size(613, 17);
             this.toolStripStatusLabel1.Spring = true;
             this.toolStripStatusLabel1.Text = "Listo";
             this.toolStripStatusLabel1.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -126,8 +126,8 @@
             // 
             this.toolStripStatusLabel2.IsLink = true;
             this.toolStripStatusLabel2.Name = "toolStripStatusLabel2";
-            this.toolStripStatusLabel2.Size = new System.Drawing.Size(93, 17);
-            this.toolStripStatusLabel2.Text = "@javiermarinros";
+            this.toolStripStatusLabel2.Size = new System.Drawing.Size(117, 17);
+            this.toolStripStatusLabel2.Text = "Compartir en Twitter";
             this.toolStripStatusLabel2.Click += new System.EventHandler(this.toolStripStatusLabel2_Click);
             // 
             // groupBox1

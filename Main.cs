@@ -333,7 +333,7 @@ namespace TuentiDownloader
 
         private void toolStripStatusLabel2_Click(object sender, EventArgs e)
         {
-            Process.Start("https://twitter.com/javiermarinros");
+            Process.Start("https://twitter.com/intent/tweet?text=" + Uri.EscapeDataString("Descargando todas mis fotos, mensajes y comentarios de Tuenti con #TuentiDownloader de @javiermarinros") + "&related=javiermarinros");
         }
     }
 }

@@ -137,7 +137,8 @@ namespace TuentiDownloader
                             "#video_detector",//Detector de vídeo
                             "iframe",//iframes
                             ".hide",//Elementos ocultos
-                            ".actionGroup .search, .actionGroup .uploadButton, .settings .settingsLink"//Botón de búsqueda y subida y opciones
+                            ".actionGroup .search, .actionGroup .uploadButton, .settings .settingsLink",//Botón de búsqueda y subida y opciones
+                            "#overlaysContainerDiv",//Overlay para los errores
                         })
             {
                 HtmlNodeCollection found = document.DocumentNode.SelectNodes(css2xpath.Transform(selector));
